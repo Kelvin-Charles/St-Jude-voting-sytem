@@ -1,0 +1,28 @@
+{% extends 'election/email/base_email.html' %}
+
+{% block content %}
+<h2 style="color: #4e73df;">New Election Announcement</h2>
+
+<p>Dear Student,</p>
+
+<p>A new election has been created: <strong>{{ election.title }}</strong></p>
+
+<div style="background-color: #f8f9fc; padding: 15px; border-radius: 4px; margin: 20px 0;">
+    <h3 style="margin-top: 0; color: #5a5c69;">Election Details</h3>
+    <p><strong>Description:</strong> {{ election.description }}</p>
+    <p><strong>Start Date:</strong> {{ election.start_date|date:"F j, Y, g:i a" }}</p>
+    <p><strong>End Date:</strong> {{ election.end_date|date:"F j, Y, g:i a" }}</p>
+</div>
+
+<p>Please log in to the voting system during the election period to cast your vote.</p>
+
+<div style="text-align: center;">
+    <a href="{{ request.scheme }}://{{ request.get_host }}{% url 'election:election-list' %}" 
+       class="button" style="color: white;">
+        Go to Voting System
+    </a>
+</div>
+
+<p style="margin-top: 20px;"><small>If you're unable to click the button above, copy and paste this URL into your browser:</small><br>
+{{ request.scheme }}://{{ request.get_host }}{% url 'election:election-list' %}</p>
+{% endblock %} 

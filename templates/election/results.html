@@ -1,0 +1,85 @@
+{% extends 'election/base.html' %}
+{% load static %}
+
+{% block title %}Results - {{ election.title }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Results: {{ election.title }}</h4>
+        <a href="{% url 'election:election-list' %}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Elections
+        </a>
+    </div>
+    <div class="card-body">
+        {% if not election.is_ongoing or user.is_admin %}
+            {% for position, result in results.items %}
+            <div class="mb-4">
+                <h5 class="mb-3">{{ position.title }}</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Candidate</th>
+                                        <th class="text-center">Votes</th>
+                                        <th class="text-end">Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for count in result.vote_counts %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if count.candidate.photo %}
+                                                <img src="{{ count.candidate.photo.url }}" 
+                                                     alt="{{ count.candidate.user.get_full_name }}"
+                                                     class="rounded-circle me-2"
+                                                     style="width: 40px; height: 40px; object-fit: cover;">
+                                                {% endif %}
+                                                {{ count.candidate.user.get_full_name }}
+                                            </div>
+                                        </td>
+                                        <td class="text-center">{{ count.votes }}</td>
+                                        <td class="text-end">
+                                            <div class="d-flex align-items-center justify-content-end">
+                                                <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                    <div class="progress-bar" 
+                                                         role="progressbar" 
+                                                         style="width: {{ count.percentage }}%"
+                                                         aria-valuenow="{{ count.percentage }}" 
+                                                         aria-valuemin="0" 
+                                                         aria-valuemax="100"></div>
+                                                </div>
+                                                <span class="text-muted" style="min-width: 45px;">
+                                                    {{ count.percentage }}%
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td><strong>Total Votes</strong></td>
+                                        <td class="text-center"><strong>{{ result.total_votes }}</strong></td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-lock fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">Results are not available yet</h4>
+                <p class="text-muted">Results will be displayed after the election ends.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

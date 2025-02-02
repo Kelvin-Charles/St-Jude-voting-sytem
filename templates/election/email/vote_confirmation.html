@@ -1,0 +1,24 @@
+{% extends 'election/email/base_email.html' %}
+
+{% block content %}
+<h2 style="color: #4e73df;">Vote Confirmation</h2>
+
+<p>Dear {{ user.get_full_name }},</p>
+
+<p>Your vote in the election "<strong>{{ election.title }}</strong>" has been successfully recorded.</p>
+
+<div style="background-color: #f8f9fc; padding: 15px; border-radius: 4px; margin: 20px 0;">
+    <h3 style="margin-top: 0; color: #5a5c69;">Vote Details</h3>
+    <p><strong>Election:</strong> {{ election.title }}</p>
+    <p><strong>Date:</strong> {{ election.end_date|date:"F j, Y, g:i a" }}</p>
+</div>
+
+<p>Thank you for participating in this election. The results will be available after the election ends.</p>
+
+<div style="text-align: center;">
+    <a href="{{ request.scheme }}://{{ request.get_host }}{% url 'election:election-list' %}" 
+       class="button" style="color: white;">
+        View Elections
+    </a>
+</div>
+{% endblock %} 

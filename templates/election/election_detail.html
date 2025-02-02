@@ -1,0 +1,76 @@
+{% extends 'election/base.html' %}
+{% load static %}
+
+{% block title %}{{ election.title }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">{{ election.title }}</h4>
+        {% if user.is_admin %}
+        <a href="{% url 'election:position-create' election.id %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add Position
+        </a>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <div class="mb-4">
+            <h5>Election Details</h5>
+            <p>{{ election.description }}</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Start Date:</strong> {{ election.start_date|date:"F j, Y, g:i a" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>End Date:</strong> {{ election.end_date|date:"F j, Y, g:i a" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <h5>Positions</h5>
+        {% if election.positions.exists %}
+        <div class="row">
+            {% for position in election.positions.all %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ position.title }}</h5>
+                        {% if user.is_admin %}
+                        <div class="btn-group">
+                            <a href="{% url 'election:position-edit' position.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'election:candidate-create' position.id %}" class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-user-plus"></i>
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <p>{{ position.description }}</p>
+                        <h6>Candidates:</h6>
+                        <ul class="list-group">
+                            {% for candidate in position.candidates.all %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ candidate.user.get_full_name }}
+                                {% if user.is_admin %}
+                                <a href="{% url 'election:candidate-edit' candidate.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                {% endif %}
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item text-muted">No candidates yet</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-center text-muted">No positions have been added to this election yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

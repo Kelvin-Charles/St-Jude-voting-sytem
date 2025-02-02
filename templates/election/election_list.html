@@ -1,0 +1,138 @@
+{% extends 'election/base.html' %}
+{% load static %}
+
+{% block title %}Elections - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col">
+        <h2 class="mb-0 text-primary">
+            <i class="fas fa-vote-yea me-2"></i>Elections
+        </h2>
+    </div>
+    {% if user.is_admin %}
+    <div class="col-auto">
+        <a href="{% url 'election:election-create' %}" class="btn btn-primary btn-hover-lift">
+            <i class="fas fa-plus-circle me-2"></i>Create Election
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+{% if elections %}
+<div class="row g-4">
+    {% for election in elections %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                {% if election.is_ongoing %}
+                <span class="badge bg-success float-end">
+                    <i class="fas fa-clock me-1"></i>Active
+                </span>
+                {% else %}
+                <span class="badge bg-secondary float-end">
+                    <i class="fas fa-clock me-1"></i>Inactive
+                </span>
+                {% endif %}
+                <h5 class="card-title text-primary mb-0">{{ election.title }}</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text text-muted">{{ election.description|truncatewords:30 }}</p>
+                
+                <div class="small mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fas fa-calendar-alt text-primary me-2"></i>
+                        <span><strong>Start:</strong> {{ election.start_date|date:"F j, Y, g:i a" }}</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-calendar-check text-primary me-2"></i>
+                        <span><strong>End:</strong> {{ election.end_date|date:"F j, Y, g:i a" }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-top-0 pb-4">
+                <div class="d-grid gap-2">
+                    {% if election.is_ongoing and election.can_vote %}
+                    <a href="{% url 'election:vote' election.id %}" class="btn btn-primary btn-hover-lift">
+                        <i class="fas fa-vote-yea me-2"></i>Vote Now
+                    </a>
+                    {% elif election.is_ongoing %}
+                    <button class="btn btn-secondary" disabled>
+                        <i class="fas fa-check-circle me-2"></i>Already Voted
+                    </button>
+                    {% endif %}
+                    
+                    {% if user.is_admin or not election.is_ongoing %}
+                    <a href="{% url 'election:results' election.id %}" class="btn btn-outline-primary btn-hover-lift">
+                        <i class="fas fa-chart-bar me-2"></i>View Results
+                    </a>
+                    {% endif %}
+                    
+                    {% if user.is_admin %}
+                    <a href="{% url 'election:election-detail' election.id %}" class="btn btn-outline-secondary btn-hover-lift">
+                        <i class="fas fa-cog me-2"></i>Manage Election
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <div class="display-1 text-muted mb-4">
+        <i class="fas fa-box-open"></i>
+    </div>
+    <h4 class="text-muted mb-3">No Elections Available</h4>
+    {% if user.is_admin %}
+    <p class="text-muted mb-4">Create your first election to get started</p>
+    <a href="{% url 'election:election-create' %}" class="btn btn-primary btn-lg btn-hover-lift">
+        <i class="fas fa-plus-circle me-2"></i>Create Election
+    </a>
+    {% else %}
+    <p class="text-muted">Check back later for upcoming elections</p>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add animation when cards enter viewport
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('show');
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+
+    document.querySelectorAll('.card').forEach(card => {
+        observer.observe(card);
+    });
+</script>
+
+<style>
+    .card {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    
+    .card.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .card:nth-child(2) {
+        transition-delay: 0.1s;
+    }
+    
+    .card:nth-child(3) {
+        transition-delay: 0.2s;
+    }
+</style>
+{% endblock %} 
