@@ -1,0 +1,74 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    .analytics-container {
+        padding: 20px;
+    }
+
+    .chart-container {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+        border: 1px solid rgba(226, 232, 240, 0.6);
+    }
+
+    .chart-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: var(--navy-blue);
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="analytics-container">
+    <div class="chart-container">
+        <h2 class="chart-title">Monthly Voting Activity</h2>
+        <canvas id="monthlyVotesChart"></canvas>
+    </div>
+</div>
+
+<script>
+    const monthlyVotesData = {{ monthly_votes|safe }};
+    const labels = monthlyVotesData.map(item => {
+        const date = new Date();
+        date.setMonth(item.month - 1);
+        return date.toLocaleString('default', { month: 'long' });
+    });
+    const data = monthlyVotesData.map(item => item.count);
+
+    new Chart(document.getElementById('monthlyVotesChart'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Votes',
+                data: data,
+                borderColor: '#4318FF',
+                backgroundColor: 'rgba(67, 24, 255, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Voting Trends'
+                }
+            }
+        }
+    });
+</script>
+{% endblock %} 

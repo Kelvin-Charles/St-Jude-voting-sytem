@@ -41,7 +41,9 @@ ROOT_URLCONF = 'st_jude_voting_system.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [
+            BASE_DIR / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -121,7 +123,7 @@ EMAIL_HOST_USER = 'your-email@gmail.com'
 EMAIL_HOST_PASSWORD = 'your-app-specific-password'
 
 # Login/Logout URLs
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/admin/dashboard/'
 LOGOUT_REDIRECT_URL = '/login/'
 LOGIN_URL = '/login/'
 
@@ -134,4 +136,7 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True 
+SESSION_COOKIE_SECURE = True
+
+# Add or update these settings
+ADMIN_LOGIN_REDIRECT_URL = '/admin/dashboard/' 

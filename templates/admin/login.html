@@ -1,0 +1,258 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    body {
+        background: linear-gradient(135deg, #1a1f37 0%, #111827 100%);
+        margin: 0;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* Center the login container */
+    #content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 100vh;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Animation Background */
+    .animation-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        opacity: 0.1;
+        pointer-events: none;
+    }
+
+    .floating-icon {
+        position: absolute;
+        animation: float 6s ease-in-out infinite;
+        opacity: 0.2;
+        color: white;
+    }
+
+    @keyframes float {
+        0% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(180deg); }
+        100% { transform: translateY(0px) rotate(360deg); }
+    }
+
+    /* Login Container */
+    #login-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        padding: 40px;
+        width: 400px;
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 15%);
+        position: relative;
+        z-index: 1;
+        margin: 20px;
+    }
+
+    /* Logo Section */
+    .login-logo {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .login-logo img {
+        height: 80px;
+        margin-bottom: 15px;
+    }
+
+    .login-logo h1 {
+        color: #2C3E50;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    /* Form Styling */
+    form {
+        margin-top: 30px;
+    }
+
+    .form-row {
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .form-row input {
+        width: 100%;
+        padding: 12px 15px 12px 45px;
+        border: 1px solid #E9ECEF;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        background: white;
+        box-sizing: border-box;
+    }
+
+    .form-row input:focus {
+        border-color: #4318FF;
+        box-shadow: 0 0 0 3px rgba(67, 24, 255, 0.1);
+        outline: none;
+    }
+
+    .form-row i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #A0AEC0;
+        font-size: 1.1rem;
+    }
+
+    /* Submit Button */
+    .submit-row {
+        margin-top: 30px;
+    }
+
+    .submit-row input {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(90deg, #4318FF, #9F7AEA);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .submit-row input:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(67, 24, 255, 0.2);
+    }
+
+    /* Error Messages */
+    .errornote {
+        background: #FEE2E2;
+        border: 1px solid #FCA5A5;
+        color: #DC2626;
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+
+    /* Hide header and other elements on login page */
+    body.login #header,
+    body.login #nav-sidebar,
+    body.login .breadcrumbs,
+    body.login .password-reset-link {
+        display: none;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 480px) {
+        #login-container {
+            width: 100%;
+            margin: 15px;
+            padding: 30px 20px;
+        }
+
+        .login-logo img {
+            height: 60px;
+        }
+    }
+</style>
+
+<!-- Add Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<!-- Add Plus Jakarta Sans font -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="animation-wrapper">
+    <!-- Election Icons Animation -->
+    <i class="fas fa-vote-yea floating-icon" style="top: 10%; left: 10%; font-size: 2rem;"></i>
+    <i class="fas fa-check-circle floating-icon" style="top: 20%; right: 15%; font-size: 3rem;"></i>
+    <i class="fas fa-users floating-icon" style="bottom: 15%; left: 20%; font-size: 2.5rem;"></i>
+    <i class="fas fa-poll floating-icon" style="bottom: 25%; right: 10%; font-size: 2rem;"></i>
+</div>
+
+<div id="login-container">
+    <div class="login-logo">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQik7ZJRLnYVzi5A9VZ2RSt0FT5QOH255c-vA&s" alt="St Jude School Logo">
+        <h1>St Jude School</h1>
+        <p style="color: #718096; margin-top: 5px;">
+            {% if request.path == '/admin/login/' %}
+                Voting System Administration
+            {% else %}
+                Voting System
+            {% endif %}
+        </p>
+    </div>
+
+    {% if form.errors and not form.non_field_errors %}
+    <p class="errornote">
+        {% blocktranslate count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}
+    </p>
+    {% endif %}
+
+    {% if form.non_field_errors %}
+    {% for error in form.non_field_errors %}
+    <p class="errornote">
+        {{ error }}
+    </p>
+    {% endfor %}
+    {% endif %}
+
+    <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
+        <div class="form-row">
+            <i class="fas fa-user"></i>
+            {{ form.username }}
+        </div>
+        <div class="form-row">
+            <i class="fas fa-lock"></i>
+            {{ form.password }}
+        </div>
+        <div class="submit-row">
+            <input type="submit" value="{% if request.path == '/admin/login/' %}Admin Login{% else %}Login{% endif %}">
+        </div>
+        {% if request.path != '/admin/login/' %}
+        <div style="text-align: center; margin-top: 20px;">
+            <p style="color: #718096; font-size: 0.9rem;">
+                Don't have an account? <a href="{% url 'register' %}" style="color: #4318FF; text-decoration: none; font-weight: 500;">Register here</a>
+            </p>
+        </div>
+        {% endif %}
+    </form>
+</div>
+
+<script>
+    // Add floating animation to icons
+    document.addEventListener('DOMContentLoaded', function() {
+        const icons = document.querySelectorAll('.floating-icon');
+        icons.forEach((icon, index) => {
+            icon.style.animationDelay = `${index * 0.5}s`;
+        });
+
+        // Add placeholders to form fields
+        const usernameField = document.querySelector('#id_username');
+        const passwordField = document.querySelector('#id_password');
+        if (usernameField) usernameField.placeholder = 'Username';
+        if (passwordField) passwordField.placeholder = 'Password';
+    });
+</script>
+{% endblock %} 

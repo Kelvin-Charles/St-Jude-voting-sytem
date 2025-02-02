@@ -1,0 +1,230 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/dashboard.css' %}">
+<style>
+    .dashboard-container {
+        padding: 24px;
+        background: linear-gradient(127.09deg, rgba(6, 11, 40, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%) !important;
+        min-height: calc(100vh - 60px);
+    }
+
+    .page-title {
+        color: white;
+        font-size: 1.875rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+    .stats-overview {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-item {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: #2B3674;
+    }
+
+    .stat-label {
+        color: #A3AED0;
+        font-size: 0.9rem;
+    }
+
+    .admin-modules {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 2rem;
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+    }
+
+    .module {
+        border-bottom: 1px solid #E9EDF7;
+        padding: 1.5rem;
+    }
+
+    .module:last-child {
+        border-bottom: none;
+    }
+
+    .module h2 {
+        color: #2B3674;
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0 0 1rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .module h2 i {
+        color: #4318FF;
+        font-size: 1.25rem;
+    }
+
+    .module ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .module a {
+        color: #2B3674;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        background: #F4F7FE;
+    }
+
+    .module a:hover {
+        background: #EFF4FB;
+        transform: translateY(-2px);
+    }
+
+    .module i {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: rgba(67, 24, 255, 0.1);
+        color: #4318FF;
+    }
+
+    .recent-actions {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+    }
+
+    .recent-actions h2 {
+        color: #2B3674;
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0 0 1rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .recent-actions h2 i {
+        color: #4318FF;
+    }
+
+    .recent-actions ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .recent-actions li {
+        padding: 0.75rem;
+        border-bottom: 1px solid #E9EDF7;
+        color: #2B3674;
+    }
+
+    .recent-actions li:last-child {
+        border-bottom: none;
+    }
+
+    .recent-actions p {
+        color: #A3AED0;
+        text-align: center;
+        padding: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1 class="page-title">{{ title }}</h1>
+
+    <!-- Stats Overview -->
+    <div class="stats-overview">
+        <div class="stat-item">
+            <div class="stat-number">{{ total_elections }}</div>
+            <div class="stat-label">Elections</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ total_users }}</div>
+            <div class="stat-label">Users</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ total_votes }}</div>
+            <div class="stat-label">Votes Cast</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ active_elections }}</div>
+            <div class="stat-label">Active Elections</div>
+        </div>
+    </div>
+
+    <!-- Election Modules -->
+    <div class="admin-modules">
+        <div class="module">
+            <h2><i class="fas fa-vote-yea"></i> Election Management</h2>
+            <ul>
+                <li><a href="{% url 'admin:election_candidate_changelist' %}">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Candidates</span>
+                </a></li>
+                <li><a href="{% url 'admin:election_election_changelist' %}">
+                    <i class="fas fa-vote-yea"></i>
+                    <span>Elections</span>
+                </a></li>
+                <li><a href="{% url 'admin:election_position_changelist' %}">
+                    <i class="fas fa-sitemap"></i>
+                    <span>Positions</span>
+                </a></li>
+                <li><a href="{% url 'admin:election_user_changelist' %}">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </a></li>
+                <li><a href="{% url 'admin:election_vote_changelist' %}">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Votes</span>
+                </a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Recent Actions -->
+    <div class="recent-actions">
+        <h2><i class="fas fa-history"></i> Recent Actions</h2>
+        {% load log %}
+        {% get_admin_log 10 as admin_log %}
+        {% if not admin_log %}
+        <p>No recent actions.</p>
+        {% else %}
+        <ul>
+            {% for entry in admin_log %}
+            <li>{{ entry.action_time|timesince }} ago - {{ entry.object_repr }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

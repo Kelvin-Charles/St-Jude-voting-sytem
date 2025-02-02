@@ -1,0 +1,301 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    .dashboard-container {
+        padding: 20px;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(226, 232, 240, 0.6);
+        transition: transform 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), #2F0BC5);
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--navy-blue);
+        margin-bottom: 8px;
+    }
+
+    .stat-label {
+        color: var(--secondary-color);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        background: var(--light-color);
+    }
+
+    .stat-icon i {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+    }
+
+    /* Recent Activity */
+    .activity-section {
+        background: white;
+        border-radius: 20px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(226, 232, 240, 0.6);
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--navy-blue);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .activity-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .activity-item {
+        padding: 16px;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+
+    .activity-item:hover {
+        background-color: var(--light-color);
+    }
+
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--light-color);
+    }
+
+    .activity-icon i {
+        color: var(--primary-color);
+    }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .activity-title {
+        font-weight: 600;
+        color: var(--navy-blue);
+        margin-bottom: 4px;
+    }
+
+    .activity-time {
+        font-size: 0.875rem;
+        color: var(--secondary-color);
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .action-button {
+        background: white;
+        border: 1px solid rgba(226, 232, 240, 0.6);
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: var(--navy-blue);
+    }
+
+    .action-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary-color);
+    }
+
+    .action-button i {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        margin-bottom: 8px;
+    }
+
+    .action-label {
+        font-weight: 600;
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <a href="{% url 'admin:election_election_add' %}" class="action-button">
+            <i class="fas fa-plus-circle"></i>
+            <span class="action-label">New Election</span>
+        </a>
+        <a href="{% url 'admin:election_user_add' %}" class="action-button">
+            <i class="fas fa-user-plus"></i>
+            <span class="action-label">Add User</span>
+        </a>
+        <a href="{% url 'admin:election_position_add' %}" class="action-button">
+            <i class="fas fa-sitemap"></i>
+            <span class="action-label">Add Position</span>
+        </a>
+        <a href="{% url 'admin:analytics' %}" class="action-button">
+            <i class="fas fa-chart-line"></i>
+            <span class="action-label">View Analytics</span>
+        </a>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-value">{{ total_users }}</div>
+            <div class="stat-label">
+                <i class="fas fa-user"></i>
+                Total Users
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-vote-yea"></i>
+            </div>
+            <div class="stat-value">{{ total_votes }}</div>
+            <div class="stat-label">
+                <i class="fas fa-check-circle"></i>
+                Total Votes
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-poll"></i>
+            </div>
+            <div class="stat-value">{{ total_elections }}</div>
+            <div class="stat-label">
+                <i class="fas fa-calendar"></i>
+                Total Elections
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-value">{{ active_elections }}</div>
+            <div class="stat-label">
+                <i class="fas fa-circle text-success"></i>
+                Active Elections
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="activity-section">
+        <h2 class="section-title">
+            <i class="fas fa-history"></i>
+            Recent Activity
+        </h2>
+        <ul class="activity-list">
+            {% for vote in recent_votes %}
+            <li class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-vote-yea"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">
+                        {{ vote.voter.get_full_name }} voted for {{ vote.candidate.user.get_full_name }}
+                    </div>
+                    <div class="activity-time">
+                        {{ vote.timestamp|timesince }} ago
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Recent Users -->
+    <div class="activity-section">
+        <h2 class="section-title">
+            <i class="fas fa-user-plus"></i>
+            New Users
+        </h2>
+        <ul class="activity-list">
+            {% for user in recent_users %}
+            <li class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">
+                        {{ user.get_full_name }}
+                    </div>
+                    <div class="activity-time">
+                        Joined {{ user.date_joined|timesince }} ago
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %} 

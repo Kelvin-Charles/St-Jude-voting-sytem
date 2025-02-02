@@ -1,0 +1,117 @@
+{% extends 'election/base.html' %}
+
+{% block content %}
+<div class="content-card" style="text-align: center; max-width: 800px; margin: 0 auto;">
+    <div style="margin-bottom: 3rem;">
+        <h1 style="
+            font-size: 2.5rem;
+            color: var(--navy-blue);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        ">Welcome to Student's Government Election</h1>
+        
+        <p style="
+            font-size: 1.1rem;
+            color: #718096;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        ">Exercise your right to vote and be part of shaping the future of our school's student leadership.</p>
+
+        {% if not user.is_authenticated %}
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="{% url 'login' %}" class="btn-primary">
+                <i class="fas fa-sign-in-alt"></i>
+                Login to Vote
+            </a>
+            <a href="{% url 'register' %}" style="
+                background: rgba(67, 24, 255, 0.05);
+                color: var(--primary-color);
+                border: none;
+                border-radius: 12px;
+                padding: 12px 24px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                text-decoration: none;
+            ">
+                <i class="fas fa-user-plus"></i>
+                Register Now
+            </a>
+        </div>
+        {% else %}
+        <div style="
+            background: rgba(67, 24, 255, 0.05);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+        ">
+            <h2 style="
+                color: var(--navy-blue);
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+                font-weight: 600;
+            ">Quick Actions</h2>
+            
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                {% if user.is_admin %}
+                <a href="{% url 'admin:index' %}" class="btn-primary">
+                    <i class="fas fa-columns"></i>
+                    Go to Admin Dashboard
+                </a>
+                {% else %}
+                <a href="{% url 'election:election-list' %}" class="btn-primary">
+                    <i class="fas fa-vote-yea"></i>
+                    View Active Elections
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Features Section -->
+    <div style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+        padding-top: 3rem;
+        border-top: 1px solid #E9ECEF;
+    ">
+        <div style="text-align: center;">
+            <i class="fas fa-shield-alt" style="
+                font-size: 2rem;
+                color: var(--primary-color);
+                margin-bottom: 1rem;
+            "></i>
+            <h3 style="color: var(--navy-blue); margin-bottom: 0.5rem;">Secure Voting</h3>
+            <p style="color: #718096; font-size: 0.95rem;">Your vote is secure and confidential with our advanced security measures.</p>
+        </div>
+
+        <div style="text-align: center;">
+            <i class="fas fa-chart-bar" style="
+                font-size: 2rem;
+                color: var(--primary-color);
+                margin-bottom: 1rem;
+            "></i>
+            <h3 style="color: var(--navy-blue); margin-bottom: 0.5rem;">Real-time Results</h3>
+            <p style="color: #718096; font-size: 0.95rem;">Watch the election progress with live vote counting and results.</p>
+        </div>
+
+        <div style="text-align: center;">
+            <i class="fas fa-users" style="
+                font-size: 2rem;
+                color: var(--primary-color);
+                margin-bottom: 1rem;
+            "></i>
+            <h3 style="color: var(--navy-blue); margin-bottom: 0.5rem;">Fair Elections</h3>
+            <p style="color: #718096; font-size: 0.95rem;">Every student gets an equal opportunity to participate in the democratic process.</p>
+        </div>
+    </div>
+</div>
+{% endblock %} 
