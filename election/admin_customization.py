@@ -13,8 +13,8 @@ class ElectionAdminSite(AdminSite):
     index_title = "Election Management"
     
     def index(self, request, extra_context=None):
-        # Redirect admin index to election dashboard
-        return redirect('admin:election_dashboard')
+        # Redirect admin index to dashboard
+        return redirect('admin:dashboard')
     
     def get_urls(self):
         urls = super().get_urls()

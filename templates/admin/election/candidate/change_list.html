@@ -1,0 +1,181 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* Enhanced Table Styling */
+    #result_list {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        margin-top: 1rem;
+    }
+
+    #result_list thead th {
+        background: linear-gradient(127.09deg, rgba(6, 11, 40, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%);
+        color: white;
+        padding: 1rem;
+        font-weight: 600;
+        border: none;
+    }
+
+    #result_list tbody td {
+        padding: 1rem;
+        border-bottom: 1px solid #edf2f7;
+        vertical-align: middle;
+    }
+
+    #result_list tbody tr:hover {
+        background: rgba(67, 24, 255, 0.05);
+    }
+
+    /* Candidate Photo */
+    .candidate-photo {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 1rem;
+    }
+
+    /* Action Buttons */
+    .action-buttons a {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        margin-right: 0.5rem;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+    }
+
+    .edit-btn {
+        background: rgba(67, 24, 255, 0.1);
+        color: #4318FF;
+    }
+
+    .delete-btn {
+        background: rgba(231, 74, 59, 0.1);
+        color: #e74a3b;
+    }
+
+    /* Filter Sidebar */
+    #changelist-filter {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    #changelist-filter h2 {
+        color: #2B3674;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #edf2f7;
+    }
+
+    #changelist-filter ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    #changelist-filter li {
+        margin: 0.5rem 0;
+    }
+
+    #changelist-filter a {
+        color: #718096;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    #changelist-filter a:hover {
+        color: #4318FF;
+    }
+
+    /* Search Bar */
+    #searchbar {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    #searchbar:focus {
+        border-color: #4318FF;
+        box-shadow: 0 0 0 3px rgba(67, 24, 255, 0.1);
+        outline: none;
+    }
+
+    /* Pagination */
+    .pagination {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .pagination a, .pagination span {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        background: white;
+        color: #2B3674;
+        transition: all 0.3s ease;
+    }
+
+    .pagination .active {
+        background: #4318FF;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    {% block object-tools %}
+        <div class="object-tools-wrapper">
+            {% if has_add_permission %}
+                <a href="{% url cl.opts|admin_urlname:'add' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Add Candidate
+                </a>
+            {% endif %}
+        </div>
+    {% endblock %}
+
+    {% block search %}
+        {% if cl.search_fields %}
+            <div class="search-wrapper">
+                <form id="changelist-search" method="get">
+                    <input type="text" 
+                           id="searchbar" 
+                           name="{{ search_var }}" 
+                           value="{{ cl.query }}" 
+                           placeholder="Search candidates...">
+                </form>
+            </div>
+        {% endif %}
+    {% endblock %}
+
+    <form id="changelist-form" method="post"{% if cl.formset and cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>{% csrf_token %}
+        {% if cl.formset %}
+            <div>{{ cl.formset.management_form }}</div>
+        {% endif %}
+
+        {% block result_list %}
+            {% if action_form and actions_on_top and cl.show_admin_actions %}
+                {% admin_actions %}
+            {% endif %}
+            {% result_list cl %}
+        {% endblock %}
+
+        {% block pagination %}
+            {% pagination cl %}
+        {% endblock %}
+    </form>
+</div>
+{% endblock %} 

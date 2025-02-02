@@ -1,0 +1,12 @@
+{% load i18n admin_urls %}
+
+<div class="object-tools">
+    {% block object-tools-items %}
+        {% if has_add_permission %}
+        <a href="{% url cl.opts|admin_urlname:'add' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>
+            {% blocktranslate with name=cl.opts.verbose_name %}Add {{ name }}{% endblocktranslate %}
+        </a>
+        {% endif %}
+    {% endblock %}
+</div> 
