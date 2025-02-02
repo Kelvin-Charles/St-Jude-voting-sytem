@@ -1,0 +1,160 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    .dashboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 24px;
+        padding: 24px 0;
+    }
+
+    .app-card {
+        background: linear-gradient(127.09deg, rgba(6, 11, 40, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%) !important;
+        border-radius: 20px;
+        color: white;
+    }
+
+    .app-card-header {
+        background: transparent !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .model-link {
+        color: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    .model-link:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 20px;
+        border: 1px solid rgba(226, 232, 240, 0.6);
+    }
+
+    .stat-item {
+        background: linear-gradient(127.09deg, rgba(6, 11, 40, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%);
+        border-radius: 20px;
+        color: white;
+    }
+
+    .stat-value {
+        color: white;
+        font-size: 2.5rem;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .recent-actions {
+        background: white;
+        border-radius: 20px;
+        border: 1px solid rgba(226, 232, 240, 0.6);
+    }
+
+    .action-item {
+        border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+    }
+
+    .action-icon {
+        background: var(--light-color);
+        width: 40px;
+        height: 40px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="stats-card">
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-value">{{ total_elections }}</div>
+            <div class="stat-label">Elections</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{ total_users }}</div>
+            <div class="stat-label">Users</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{ total_votes }}</div>
+            <div class="stat-label">Votes Cast</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{ active_elections }}</div>
+            <div class="stat-label">Active Elections</div>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard">
+    {% for app in app_list %}
+    <div class="app-card">
+        <div class="app-card-header">
+            <i class="fas {% if app.name == 'Election' %}fa-vote-yea{% else %}fa-cog{% endif %} me-2"></i>
+            {{ app.name }}
+        </div>
+        <div class="app-card-content">
+            <ul class="model-list">
+                {% for model in app.models %}
+                <li>
+                    {% if model.admin_url %}
+                    <a href="{{ model.admin_url }}" class="model-link">
+                        <i class="fas {% if model.object_name == 'Election' %}fa-poll
+                                    {% elif model.object_name == 'Position' %}fa-sitemap
+                                    {% elif model.object_name == 'Candidate' %}fa-user-tie
+                                    {% elif model.object_name == 'Vote' %}fa-check-square
+                                    {% elif model.object_name == 'User' %}fa-users
+                                    {% else %}fa-circle{% endif %}"></i>
+                        {{ model.name }}
+                    </a>
+                    {% else %}
+                    {{ model.name }}
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="recent-actions">
+    <h2><i class="fas fa-history me-2"></i>Recent Actions</h2>
+    {% load log %}
+    {% get_admin_log 10 as admin_log %}
+    {% if not admin_log %}
+    <p>No recent actions.</p>
+    {% else %}
+    <ul class="action-list">
+        {% for entry in admin_log %}
+        <li class="action-item">
+            <div class="action-icon">
+                <i class="fas {% if entry.is_addition %}fa-plus
+                            {% elif entry.is_change %}fa-edit
+                            {% elif entry.is_deletion %}fa-trash
+                            {% endif %}"></i>
+            </div>
+            <div class="action-content">
+                <div class="action-title">
+                    {% if entry.is_deletion or not entry.get_admin_url %}
+                        {{ entry.object_repr }}
+                    {% else %}
+                        <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                    {% endif %}
+                </div>
+                <div class="action-time">
+                    {{ entry.action_time|timesince }} ago
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+{% endblock %} 

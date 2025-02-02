@@ -1,0 +1,994 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('St Jude School Admin') }}{% endblock %}
+
+{% block extrastyle %}
+<style>
+    :root {
+        --primary-color: #4318FF;
+        --secondary-color: #A3AED0;
+        --success-color: #05CD99;
+        --info-color: #0075FF;
+        --warning-color: #FFAC31;
+        --danger-color: #EE5D50;
+        --light-color: #F4F7FE;
+        --dark-color: #2B3674;
+        --navy-blue: #1B2559;
+    }
+
+    /* Main Layout */
+    body {
+        background: #F8F9FA !important;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #container {
+        display: flex;
+        flex: 1;
+        margin-top: 60px;
+    }
+
+    /* Enhanced Navbar */
+    #header {
+        background: white;
+        box-shadow: 0 2px 12px 0 rgb(0 0 0 / 5%);
+        padding: 0 2rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    /* Logo and Title Styling */
+    #branding {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+    }
+
+    #site-name {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        margin: 0;
+        padding-left: 10px;
+        border-left: 2px solid #E9ECEF;
+    }
+
+    #site-name img {
+        height: 65px;
+        width: auto;
+        object-fit: contain;
+        margin-right: 10px;
+    }
+
+    #site-name span {
+        color: var(--navy-blue);
+        font-size: 1.8rem;
+        font-weight: 700;
+        white-space: nowrap;
+        letter-spacing: -0.5px;
+        padding-left: 10px;
+    }
+
+    /* User Tools in Navbar */
+    #user-tools {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    #user-tools a {
+        color: var(--navy-blue);
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        background: rgba(67, 24, 255, 0.05);
+    }
+
+    #user-tools a:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    /* Sidebar Styling */
+    #nav-sidebar {
+        background: white;
+        width: 280px;
+        min-width: 280px;
+        height: calc(100vh - 80px);
+        position: fixed;
+        left: 0;
+        top: 80px;
+        overflow-y: auto;
+        padding: 1.5rem 0;
+        z-index: 99;
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+        border-right: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    /* Sidebar Brand */
+    .sidebar-brand {
+        padding: 0 1.5rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        border-bottom: 1px solid #E9ECEF;
+        margin-bottom: 1.5rem;
+    }
+
+    .sidebar-brand img {
+        height: 40px;
+        width: auto;
+    }
+
+    .sidebar-brand span {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--navy-blue);
+    }
+
+    /* Sidebar Sections */
+    .sidebar-section {
+        margin-bottom: 2rem;
+        padding: 0 1rem;
+    }
+
+    .sidebar-section-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #A0AEC0;
+        padding: 0 0.5rem;
+        margin-bottom: 0.75rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* Navigation Items */
+    .nav-item {
+        margin-bottom: 0.5rem;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        color: #2D3748;
+        text-decoration: none;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+        font-weight: 500;
+        position: relative;
+    }
+
+    .nav-link i {
+        font-size: 1.1rem;
+        color: #A0AEC0;
+        transition: all 0.3s ease;
+        width: 24px;
+        text-align: center;
+    }
+
+    .nav-link:hover {
+        background: rgba(67, 24, 255, 0.05);
+        color: var(--primary-color);
+    }
+
+    .nav-link:hover i {
+        color: var(--primary-color);
+    }
+
+    .nav-link.active {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .nav-link.active i {
+        color: white;
+    }
+
+    /* Section Badge */
+    .section-badge {
+        background: rgba(67, 24, 255, 0.1);
+        color: var(--primary-color);
+        padding: 0.25rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: auto;
+    }
+
+    .nav-link.active .section-badge {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    /* Logout Link */
+    .nav-link.logout {
+        color: var(--danger-color);
+    }
+
+    .nav-link.logout i {
+        color: var(--danger-color);
+    }
+
+    .nav-link.logout:hover {
+        background: rgba(238, 93, 80, 0.1);
+    }
+
+    /* Responsive Sidebar */
+    @media (max-width: 768px) {
+        #nav-sidebar {
+            width: 240px;
+            min-width: 240px;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        #nav-sidebar.show {
+            transform: translateX(0);
+        }
+
+        .sidebar-brand img {
+            height: 35px;
+        }
+
+        .sidebar-brand span {
+            font-size: 1rem;
+        }
+
+        .nav-link {
+            padding: 0.6rem 0.75rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Content Area Styling */
+    #content {
+        flex: 1;
+        margin-left: 280px;
+        padding: 2.5rem;
+        background: #F8F9FA;
+    }
+
+    /* Page Title */
+    #content h1 {
+        color: var(--navy-blue);
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.5px;
+    }
+
+    /* Module Styling */
+    .module {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .module h2 {
+        background: white;
+        color: var(--navy-blue);
+        font-size: 1.2rem;
+        font-weight: 600;
+        padding: 1.5rem;
+        margin: 0;
+        border-bottom: 1px solid #E9ECEF;
+    }
+
+    /* Table Styling */
+    #changelist {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    #changelist table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 1rem;
+    }
+
+    #changelist table thead th {
+        background: #F8F9FA;
+        color: var(--navy-blue);
+        font-weight: 600;
+        font-size: 0.875rem;
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 2px solid #E9ECEF;
+    }
+
+    #changelist table tbody td {
+        padding: 1rem;
+        color: #2D3748;
+        font-size: 0.875rem;
+        border-bottom: 1px solid #E9ECEF;
+        vertical-align: middle;
+    }
+
+    #changelist table tbody tr:hover {
+        background: rgba(67, 24, 255, 0.02);
+    }
+
+    /* Action Buttons */
+    .object-tools {
+        float: right;
+        margin-top: -4rem;
+        margin-bottom: 2rem;
+    }
+
+    .object-tools a {
+        background: var(--primary-color) !important;
+        color: white !important;
+        padding: 0.75rem 1.5rem !important;
+        border-radius: 12px !important;
+        text-decoration: none !important;
+        font-size: 0.875rem !important;
+        font-weight: 500 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+        transition: all 0.3s ease !important;
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(67, 24, 255, 0.15) !important;
+    }
+
+    .object-tools a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(67, 24, 255, 0.2) !important;
+    }
+
+    /* Filter Styling */
+    #changelist-filter {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 16px;
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+        margin-bottom: 1.5rem;
+    }
+
+    #changelist-filter h2 {
+        color: var(--navy-blue);
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    #changelist-filter h3 {
+        color: #718096;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin: 1rem 0 0.5rem;
+    }
+
+    #changelist-filter ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    #changelist-filter li {
+        margin: 0.25rem 0;
+    }
+
+    #changelist-filter a {
+        color: #2D3748;
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+    }
+
+    #changelist-filter a:hover {
+        color: var(--primary-color);
+    }
+
+    #changelist-filter li.selected a {
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    /* Form Styling */
+    .form-row {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #E9ECEF;
+        display: flex;
+        align-items: start;
+        gap: 2rem;
+    }
+
+    .form-row > div {
+        flex: 1;
+    }
+
+    .form-row label {
+        display: block;
+        color: var(--navy-blue);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .form-row input[type="text"],
+    .form-row input[type="password"],
+    .form-row input[type="email"],
+    .form-row select,
+    .form-row textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #E9ECEF;
+        border-radius: 12px;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        background: #F8F9FA;
+    }
+
+    .form-row input:focus,
+    .form-row select:focus,
+    .form-row textarea:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(67, 24, 255, 0.1);
+        outline: none;
+        background: white;
+    }
+
+    .help {
+        color: #718096;
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+    }
+
+    /* Submit Row */
+    .submit-row {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 16px;
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+        position: sticky;
+        bottom: 2rem;
+    }
+
+    .submit-row input {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 2rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(67, 24, 255, 0.15);
+    }
+
+    .submit-row input:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(67, 24, 255, 0.2);
+    }
+
+    .submit-row .deletelink {
+        background: rgba(238, 93, 80, 0.1) !important;
+        color: var(--danger-color) !important;
+        padding: 0.75rem 2rem !important;
+        border-radius: 12px !important;
+        font-size: 0.875rem !important;
+        font-weight: 600 !important;
+        text-decoration: none !important;
+    }
+
+    .submit-row .deletelink:hover {
+        background: var(--danger-color) !important;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(238, 93, 80, 0.2) !important;
+    }
+
+    /* Messages */
+    .messagelist {
+        padding: 0;
+        margin: 0 0 2rem 0;
+        list-style: none;
+    }
+
+    .messagelist li {
+        padding: 1rem 1.5rem;
+        margin-bottom: 1rem;
+        border-radius: 12px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .messagelist li.success {
+        background: rgba(5, 205, 153, 0.1);
+        color: var(--success-color);
+    }
+
+    .messagelist li.error {
+        background: rgba(238, 93, 80, 0.1);
+        color: var(--danger-color);
+    }
+
+    .messagelist li.warning {
+        background: rgba(255, 172, 49, 0.1);
+        color: var(--warning-color);
+    }
+
+    .messagelist li.info {
+        background: rgba(0, 117, 255, 0.1);
+        color: var(--info-color);
+    }
+
+    /* Dashboard Cards Grid */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    /* Card Styling */
+    .card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 8%);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+        color: var(--navy-blue);
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(67, 24, 255, 0.1);
+    }
+
+    .card-icon i {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+    }
+
+    .card-body {
+        flex: 1;
+    }
+
+    .card-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--navy-blue);
+        margin-bottom: 0.5rem;
+    }
+
+    .card-label {
+        color: #718096;
+        font-size: 0.875rem;
+    }
+
+    .card-footer {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid #E9ECEF;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .card-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--success-color);
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .card-stat.positive {
+        color: var(--success-color);
+    }
+
+    .card-stat.negative {
+        color: var(--danger-color);
+    }
+
+    /* Table Cards */
+    .table-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .table-card-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #E9ECEF;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .table-card-title {
+        color: var(--navy-blue);
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .table-card-title i {
+        color: var(--primary-color);
+    }
+
+    .table-card-body {
+        padding: 1.5rem;
+    }
+
+    /* Action Buttons in Cards */
+    .card-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .card-action-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .card-action-btn.primary {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .card-action-btn.secondary {
+        background: rgba(67, 24, 255, 0.1);
+        color: var(--primary-color);
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .status-badge.active {
+        background: rgba(5, 205, 153, 0.1);
+        color: var(--success-color);
+    }
+
+    .status-badge.pending {
+        background: rgba(255, 172, 49, 0.1);
+        color: var(--warning-color);
+    }
+
+    .status-badge.ended {
+        background: rgba(238, 93, 80, 0.1);
+        color: var(--danger-color);
+    }
+
+    /* Search and Filter Section */
+    .actions-bar {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .search-box {
+        flex: 1;
+        max-width: 400px;
+        position: relative;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border: 1px solid #E9ECEF;
+        border-radius: 12px;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        background: #F8F9FA;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #A0AEC0;
+    }
+
+    .search-box input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(67, 24, 255, 0.1);
+        outline: none;
+        background: white;
+    }
+</style>
+
+<!-- Add Plus Jakarta Sans font -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Add Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add loading animation
+        const loading = document.createElement('div');
+        loading.className = 'loading';
+        document.body.appendChild(loading);
+
+        // Remove loading animation after page loads
+        window.addEventListener('load', function() {
+            loading.remove();
+        });
+
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add tooltips
+        const tooltips = document.querySelectorAll('[data-tooltip]');
+        tooltips.forEach(element => {
+            element.style.position = 'relative';
+            element.addEventListener('mouseenter', e => {
+                const tooltip = document.createElement('div');
+                tooltip.className = 'tooltip';
+                tooltip.textContent = element.dataset.tooltip;
+                tooltip.style.position = 'absolute';
+                tooltip.style.background = 'rgba(0,0,0,0.8)';
+                tooltip.style.color = 'white';
+                tooltip.style.padding = '5px 10px';
+                tooltip.style.borderRadius = '4px';
+                tooltip.style.top = '-30px';
+                tooltip.style.left = '50%';
+                tooltip.style.transform = 'translateX(-50%)';
+                tooltip.style.zIndex = '1000';
+                element.appendChild(tooltip);
+            });
+            element.addEventListener('mouseleave', e => {
+                const tooltip = element.querySelector('.tooltip');
+                if (tooltip) tooltip.remove();
+            });
+        });
+
+        // Add icons and organize sidebar items
+        const sidebar = document.querySelector('#nav-sidebar');
+        const modules = sidebar.querySelectorAll('.module');
+
+        modules.forEach(module => {
+            const links = module.querySelectorAll('a');
+            links.forEach(link => {
+                // Add icons if not already present
+                if (!link.querySelector('i')) {
+                    const icon = document.createElement('i');
+                    icon.className = 'fas';
+                    link.insertBefore(icon, link.firstChild);
+                }
+
+                // Add badges for special items
+                if (link.textContent.includes('Vote') || link.textContent.includes('Election')) {
+                    if (!link.querySelector('.section-badge')) {
+                        const badge = document.createElement('span');
+                        badge.className = 'section-badge';
+                        badge.textContent = 'Active';
+                        link.appendChild(badge);
+                    }
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+{% block branding %}
+<div id="branding">
+    <h1 id="site-name">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQik7ZJRLnYVzi5A9VZ2RSt0FT5QOH255c-vA&s" alt="St Jude School Logo">
+        <span>Student's Government Election</span>
+    </h1>
+</div>
+{% endblock %}
+
+{% block usertools %}
+<div id="user-tools">
+    <span style="color: var(--secondary-color); font-size: 0.875rem;">
+        Welcome, <strong style="color: var(--navy-blue)">{% firstof user.get_short_name user.get_username %}</strong>
+    </span>
+    {% if user.has_usable_password %}
+        <a href="{% url 'admin:password_change' %}">
+            <i class="fas fa-key"></i>
+            Change password
+        </a>
+    {% endif %}
+    <a href="{% url 'admin:logout' %}" style="background: rgba(238, 93, 80, 0.1); color: var(--danger-color);">
+        <i class="fas fa-sign-out-alt"></i>
+        Log out
+    </a>
+</div>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block footer %}
+<footer class="footer">
+    <div class="container">
+        <p>&copy; {% now "Y" %} St Jude School. All rights reserved.</p>
+    </div>
+</footer>
+{% endblock %}
+
+{% block wrapper %}
+<div id="main">
+    {% block nav-sidebar %}
+    <div id="nav-sidebar">
+        <div class="sidebar-brand">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQik7ZJRLnYVzi5A9VZ2RSt0FT5QOH255c-vA&s" alt="St Jude School Logo">
+            <span>Admin Dashboard</span>
+        </div>
+
+        <!-- Main Navigation -->
+        <div class="sidebar-section">
+            <div class="nav-item">
+                <a href="{% url 'admin:index' %}" class="nav-link {% if request.path == '/admin/' %}active{% endif %}">
+                    <i class="fas fa-home"></i>
+                    <span>Overview</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'admin:analytics' %}" class="nav-link {% if request.path == '/admin/analytics/' %}active{% endif %}">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Election Management -->
+        <div class="sidebar-section">
+            <h3 class="sidebar-section-title">Election Management</h3>
+            <div class="nav-item">
+                <a href="{% url 'admin:election_election_changelist' %}" class="nav-link {% if '/election/election/' in request.path %}active{% endif %}">
+                    <i class="fas fa-vote-yea"></i>
+                    <span>Elections</span>
+                    {% if active_elections %}
+                    <span class="section-badge">{{ active_elections }}</span>
+                    {% endif %}
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'admin:election_position_changelist' %}" class="nav-link {% if '/election/position/' in request.path %}active{% endif %}">
+                    <i class="fas fa-sitemap"></i>
+                    <span>Positions</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'admin:election_candidate_changelist' %}" class="nav-link {% if '/election/candidate/' in request.path %}active{% endif %}">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Candidates</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- User Management -->
+        <div class="sidebar-section">
+            <h3 class="sidebar-section-title">User Management</h3>
+            <div class="nav-item">
+                <a href="{% url 'admin:election_user_changelist' %}" class="nav-link {% if '/election/user/' in request.path %}active{% endif %}">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'admin:election_vote_changelist' %}" class="nav-link {% if '/election/vote/' in request.path %}active{% endif %}">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Votes</span>
+                    <span class="section-badge">Active</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Account Settings -->
+        <div class="sidebar-section">
+            <h3 class="sidebar-section-title">Account</h3>
+            <div class="nav-item">
+                <a href="{% url 'admin:password_change' %}" class="nav-link">
+                    <i class="fas fa-key"></i>
+                    <span>Change Password</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'admin:logout' %}" class="nav-link logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+    
+    <div id="content">
+        {% block pretitle %}{% endblock %}
+        {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+        {% block object-tools %}{% endblock %}
+        {{ block.super }}
+    </div>
+</div>
+{% endblock %} 

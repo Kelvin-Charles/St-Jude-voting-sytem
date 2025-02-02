@@ -1,0 +1,527 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* Main Layout */
+    #content {
+        padding: 2rem;
+        background: #F8F9FA;
+    }
+
+    /* Card Grid Layout */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    /* Enhanced Cards */
+    .card {
+        background: linear-gradient(126.97deg, rgba(6, 11, 40, 0.74) 28.26%, rgba(10, 14, 35, 0.71) 91.2%);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 1.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 15%);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(5px);
+    }
+
+    .card-icon i {
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .card-value {
+        color: white;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.875rem;
+    }
+
+    /* Table Styling */
+    .table-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+        overflow: hidden;
+    }
+
+    .table-card-header {
+        background: linear-gradient(126.97deg, rgba(6, 11, 40, 0.74) 28.26%, rgba(10, 14, 35, 0.71) 91.2%);
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .table-card-title {
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .table-card-title i {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .table-card-body {
+        padding: 1.5rem;
+    }
+
+    /* Enhanced Table */
+    #changelist-form table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    #changelist-form table thead th {
+        background: #F8F9FA;
+        padding: 1rem;
+        font-weight: 600;
+        color: var(--navy-blue);
+        border-bottom: 2px solid #E9ECEF;
+        text-align: left;
+    }
+
+    #changelist-form table tbody td {
+        padding: 1rem;
+        border-bottom: 1px solid #E9ECEF;
+        color: #2D3748;
+    }
+
+    #changelist-form table tbody tr:hover {
+        background: rgba(67, 24, 255, 0.02);
+    }
+
+    /* Action Buttons */
+    .card-action-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .card-action-btn.primary {
+        background: linear-gradient(90deg, #4318FF, #9F7AEA);
+        color: white;
+        box-shadow: 0 4px 12px rgba(67, 24, 255, 0.15);
+    }
+
+    .card-action-btn.secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        backdrop-filter: blur(5px);
+    }
+
+    .card-action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(67, 24, 255, 0.2);
+    }
+
+    /* Search and Filter */
+    .actions-bar {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .search-box {
+        position: relative;
+        flex: 1;
+        max-width: 400px;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #A0AEC0;
+    }
+
+    #searchbar {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border: 1px solid #E9ECEF;
+        border-radius: 12px;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        background: #F8F9FA;
+    }
+
+    #searchbar:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(67, 24, 255, 0.1);
+        outline: none;
+        background: white;
+    }
+
+    /* Pagination */
+    .paginator {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-top: 1px solid #E9ECEF;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .paginator a, .paginator .this-page {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .paginator .this-page {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .paginator a {
+        color: var(--navy-blue);
+    }
+
+    .paginator a:hover {
+        background: rgba(67, 24, 255, 0.05);
+    }
+
+    /* Form Popups */
+    .popup {
+        border-radius: 20px;
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 10%);
+        border: none;
+    }
+
+    .popup #header {
+        background: linear-gradient(126.97deg, rgba(6, 11, 40, 0.74) 28.26%, rgba(10, 14, 35, 0.71) 91.2%);
+        border-radius: 20px 20px 0 0;
+        padding: 1.5rem;
+    }
+
+    .popup #content {
+        padding: 2rem;
+    }
+
+    /* Form Elements */
+    .form-row {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-row label {
+        display: block;
+        color: var(--navy-blue);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-row input[type="text"],
+    .form-row input[type="password"],
+    .form-row input[type="email"],
+    .form-row select,
+    .form-row textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #E9ECEF;
+        border-radius: 12px;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        background: #F8F9FA;
+    }
+
+    .form-row input:focus,
+    .form-row select:focus,
+    .form-row textarea:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(67, 24, 255, 0.1);
+        outline: none;
+        background: white;
+    }
+
+    /* Submit Row */
+    .submit-row {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 16px;
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        position: sticky;
+        bottom: 2rem;
+    }
+
+    .submit-row input {
+        background: linear-gradient(90deg, #4318FF, #9F7AEA);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 2rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .submit-row input:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(67, 24, 255, 0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Stats Overview -->
+<div class="dashboard-grid">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Total Records</h3>
+            <div class="card-icon">
+                <i class="fas fa-database"></i>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="card-value">{{ cl.result_count }}</div>
+            <div class="card-label">Total {{ opts.verbose_name_plural }}</div>
+        </div>
+    </div>
+
+    {% if cl.result_count %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Active Status</h3>
+            <div class="card-icon" style="background: rgba(5, 205, 153, 0.1);">
+                <i class="fas fa-check" style="color: var(--success-color);"></i>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="card-value">{{ cl.result_count }}</div>
+            <div class="card-label">Active Records</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Quick Actions</h3>
+            <div class="card-icon" style="background: rgba(255, 172, 49, 0.1);">
+                <i class="fas fa-bolt" style="color: var(--warning-color);"></i>
+            </div>
+        </div>
+        <div class="card-body">
+            <div style="display: flex; gap: 1rem;">
+                {% if has_add_permission %}
+                    <a href="add/" class="card-action-btn primary">
+                        <i class="fas fa-plus"></i>
+                        Add New
+                    </a>
+                {% endif %}
+                <a href="#" class="card-action-btn secondary">
+                    <i class="fas fa-download"></i>
+                    Export
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter Bar -->
+<div class="actions-bar">
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchbar" placeholder="Search {{ opts.verbose_name_plural }}...">
+    </div>
+    <div class="filter-actions">
+        {% block search %}{% search_form cl %}{% endblock %}
+        {% block filters %}
+            {% if cl.has_filters %}
+                <div class="filter-trigger">
+                    <i class="fas fa-filter"></i>
+                    Filters
+                </div>
+            {% endif %}
+        {% endblock %}
+    </div>
+</div>
+
+<!-- Main Content Table -->
+<div class="table-card">
+    <div class="table-card-header">
+        <h2 class="table-card-title">
+            <i class="fas fa-list"></i>
+            {{ title }}
+        </h2>
+        <div class="card-actions">
+            {% block object-tools %}
+                {% if has_add_permission %}
+                    {% include "admin/object-tools.html" %}
+                {% endif %}
+            {% endblock %}
+        </div>
+    </div>
+    <div class="table-card-body">
+        {% block result_list %}
+            {% if action_form and actions_on_top and cl.show_admin_actions %}
+                <div class="actions">
+                    {% admin_actions %}
+                </div>
+            {% endif %}
+            {% result_list cl %}
+            {% if action_form and actions_on_bottom and cl.show_admin_actions %}
+                <div class="actions">
+                    {% admin_actions %}
+                </div>
+            {% endif %}
+        {% endblock %}
+    </div>
+    {% block pagination %}
+        {% if cl.result_count %}
+            <div class="paginator">
+                {% pagination cl %}
+            </div>
+        {% endif %}
+    {% endblock %}
+</div>
+
+<!-- Additional Styles -->
+<style>
+    .filter-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .filter-trigger {
+        background: rgba(67, 24, 255, 0.05);
+        color: var(--primary-color);
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .filter-trigger:hover {
+        background: rgba(67, 24, 255, 0.1);
+    }
+
+    #changelist-form {
+        margin-top: 1rem;
+    }
+
+    #changelist-form table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    #changelist-form table thead th {
+        background: #F8F9FA;
+        padding: 1rem;
+        font-weight: 600;
+        color: var(--navy-blue);
+        border-bottom: 2px solid #E9ECEF;
+        text-align: left;
+    }
+
+    #changelist-form table tbody td {
+        padding: 1rem;
+        border-bottom: 1px solid #E9ECEF;
+        color: #2D3748;
+    }
+
+    #changelist-form table tbody tr:hover {
+        background: rgba(67, 24, 255, 0.02);
+    }
+
+    .paginator {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-top: 1px solid #E9ECEF;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .paginator .this-page {
+        background: var(--primary-color);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 6px;
+    }
+
+    #searchbar {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border: 1px solid #E9ECEF;
+        border-radius: 12px;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+    }
+
+    #searchbar:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(67, 24, 255, 0.1);
+        outline: none;
+    }
+</style>
+{% endblock %} 
