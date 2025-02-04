@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQik7ZJRLnYVzi5A9VZ2RSt0FT5QOH255c-vA&s" alt="Logo" width="100%" 
-       style="border-radius: 70px";>
+       style="border-radius: 200px";>
 </p>
 
 
@@ -46,7 +46,7 @@ This repository is maintained as a reference implementation. If you'd like to us
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/st-jude-voting-system.git
+   git clone https://github.com/Kelvin-Charles/st-jude-voting-system.git
    cd st-jude-voting-system
    ```
 
@@ -130,6 +130,7 @@ This project is developed under the collaborative program between:
 ## Credits
 
 - **Project Initiator:** Miss Elizabeth (School of St Jude Tech Facilitator)
+- **Progamme Facilitators:** Humphrey David and Christopher Benard
 - **Development:** PearlK Tech
 - **Technical Support:** JR Institute of Information Technology(CoderDojo Club)
 - **Student Contributors:** School of St Jude Tech Club
@@ -141,7 +142,7 @@ For inquiries about the partnership program:
 - The School of St Jude - [info@theschoolofstjude.ac.tz]
 
 For technical questions:
-- Humphrey  - [humphrey@3ts.co.tz]
+- Humphrey D - [humphrey@3ts.co.tz]
 - Christopher B - [chriss@3ts.co.tz]
 - Miss Elizabeth - [elizabeth.a@theschoolofstjude.ac.tz]
 - PearlK Tech - [pearlktech@gmail.com]
