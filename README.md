@@ -1,14 +1,18 @@
 # St Jude School - Student's Government Election System
 
 <p align="center">
-  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQik7ZJRLnYVzi5A9VZ2RSt0FT5QOH255c-vA&s" alt="St Jude School Logo" width="200"/>
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQik7ZJRLnYVzi5A9VZ2RSt0FT5QOH255c-vA&s" alt="Logo" width="100%" 
+       style="border-radius: 70px";>
 </p>
+
 
 ## About
 
-The Student's Government Election System is a web-based application designed to facilitate secure and efficient student government elections at the School of St Jude. This project was initiated by Miss Elizabeth and developed in collaboration with PearlK Tech to modernize the voting process and encourage student participation in school democracy.
+The Student's Government Election System is a web-based application designed to facilitate secure and efficient student government elections at the School of St Jude. This project was initiated by Miss Elizabeth and developed in collaboration with PearlK Tech Humphrey and Christopher to modernize the voting process and encourage student participation in school democracy.
 
 This project is a proud result of the partnership between **JR Institute of Information Technology** and **The School of St Jude** under their joint program for building Youth Capacity in Technology. The collaboration aims to empower young minds with practical tech skills while solving real-world challenges.
+
+
 
 ## Important Notice
 
@@ -137,6 +141,8 @@ For inquiries about the partnership program:
 - The School of St Jude - [info@theschoolofstjude.ac.tz]
 
 For technical questions:
+- Humphrey  - [humphrey@3ts.co.tz]
+- Christopher B - [chriss@3ts.co.tz]
 - Miss Elizabeth - [elizabeth.a@theschoolofstjude.ac.tz]
 - PearlK Tech - [pearlktech@gmail.com]
 
