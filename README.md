@@ -31,6 +31,10 @@ This repository is maintained as a reference implementation. If you'd like to us
 - 📱 Responsive design
 - 📈 Analytics dashboard
 - 🔍 Transparent voting process
+- <p align="center">
+  <img src="st_jude_voting_system/static/images/dashboard_sample.png" alt="Logo" width="100%" 
+       style="border-radius: 200px";>
+</p>
 
 ## Technology Stack
 
