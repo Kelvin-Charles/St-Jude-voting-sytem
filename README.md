@@ -8,7 +8,7 @@
 
 ## About
 
-The Student's Government Election System is a web-based application designed to facilitate secure and efficient student government elections at the School of St Jude. This project was initiated by Miss Elizabeth and developed in collaboration with PearlK Tech Humphrey and Christopher to modernize the voting process and encourage student participation in school democracy.
+The Student's Government Election System is a web-based application designed to facilitate secure and efficient student government elections at the School of St Jude. This project was initiated by Miss Elizabeth and developed in collaboration with PearlK Tech, Humphrey and Christopher to modernize the voting process and encourage student participation in school democracy.
 
 This project is a proud result of the partnership between **JR Institute of Information Technology** and **The School of St Jude** under their joint program for building Youth Capacity in Technology. The collaboration aims to empower young minds with practical tech skills while solving real-world challenges.
 
