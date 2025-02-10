@@ -1,5 +1,6 @@
 {% extends 'election/base.html' %}
 {% load static %}
+{% load election_filters %}
 
 {% block title %}Elections - {{ block.super }}{% endblock %}
 
@@ -52,14 +53,38 @@
             </div>
             <div class="card-footer bg-transparent border-top-0 pb-4">
                 <div class="d-grid gap-2">
-                    {% if election.is_ongoing and election.can_vote %}
-                    <a href="{% url 'election:vote' election.id %}" class="btn btn-primary btn-hover-lift">
-                        <i class="fas fa-vote-yea me-2"></i>Vote Now
-                    </a>
-                    {% elif election.is_ongoing %}
-                    <button class="btn btn-secondary" disabled>
-                        <i class="fas fa-check-circle me-2"></i>Already Voted
-                    </button>
+                    {% if election.is_ongoing %}
+                        {% if election|can_vote:user %}
+                            <a href="{% url 'election:vote' election.id %}" class="btn btn-primary">
+                                <i class="fas fa-vote-yea me-2"></i>Vote Now
+                            </a>
+                        {% else %}
+                            {% with voted_count=user.votes.all|filter_by_election:election|length %}
+                            {% with total_positions=election.positions.count %}
+                                {% if voted_count == 0 %}
+                                    <a href="{% url 'election:vote' election.id %}" class="btn btn-primary">
+                                        <i class="fas fa-vote-yea me-2"></i>Vote Now
+                                    </a>
+                                {% elif voted_count < total_positions %}
+                                    <a href="{% url 'election:vote' election.id %}" class="btn btn-warning">
+                                        <i class="fas fa-sync me-2"></i>Continue Voting ({{ voted_count }}/{{ total_positions }})
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-secondary" disabled>
+                                        <i class="fas fa-check-circle me-2"></i>Already Voted
+                                    </button>
+                                {% endif %}
+                            {% endwith %}
+                            {% endwith %}
+                        {% endif %}
+                    {% else %}
+                        <button class="btn btn-secondary" disabled>
+                            {% if election.start_date > now %}
+                                <i class="fas fa-clock me-2"></i>Starts {{ election.start_date|date:"M d, Y H:i" }}
+                            {% else %}
+                                <i class="fas fa-flag-checkered me-2"></i>Ended {{ election.end_date|date:"M d, Y H:i" }}
+                            {% endif %}
+                        </button>
                     {% endif %}
                     
                     {% if user.is_admin or not election.is_ongoing %}

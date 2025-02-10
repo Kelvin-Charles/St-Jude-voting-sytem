@@ -38,10 +38,24 @@ class Election(models.Model):
         now = timezone.now()
         return self.start_date <= now <= self.end_date and self.is_active
 
-    def can_vote(self, user):
-        if not self.is_ongoing():
+    def can_vote(self, user=None):
+        """Check if user can vote in this election"""
+        if not user or not self.is_ongoing():
             return False
-        return not Vote.objects.filter(voter=user, election=self).exists()
+            
+        # Get all positions in this election
+        positions = self.positions.all()
+        if not positions.exists():
+            return False
+            
+        # Get positions the user has already voted for
+        voted_positions = Vote.objects.filter(
+            voter=user,
+            election=self
+        ).values_list('position_id', flat=True)
+        
+        # User can vote if they haven't voted for all positions
+        return voted_positions.count() < positions.count()
 
     def get_results(self):
         results = {}
@@ -87,16 +101,15 @@ class Candidate(models.Model):
         return f"{self.user.get_full_name()} - {self.position.title}"
 
 class Vote(models.Model):
-    voter = models.ForeignKey(User, on_delete=models.CASCADE)
+    voter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='votes')
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
+    position = models.ForeignKey(Position, on_delete=models.CASCADE)
     election = models.ForeignKey(Election, on_delete=models.CASCADE)
-    position = models.ForeignKey(Position, on_delete=models.CASCADE, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = [
-            ('voter', 'election', 'position'),
-        ]
+        # This ensures a voter can only vote once per position in an election
+        unique_together = ('voter', 'election', 'position')
 
     def save(self, *args, **kwargs):
         if not self.position:

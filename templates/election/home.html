@@ -1,117 +1,255 @@
 {% extends 'election/base.html' %}
+{% load static %}
+
+{% block title %}Home - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #4318FF 0%, #9f75ff 100%);
+        padding: 100px 0;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: url("{% static 'images/pattern.svg' %}") center/cover;
+        opacity: 0.1;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+    }
+
+    .feature-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease;
+        height: 100%;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(67, 24, 255, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-icon i {
+        font-size: 1.5rem;
+        color: #4318FF;
+    }
+
+    .stats-section {
+        background: #f8fafc;
+        padding: 80px 0;
+    }
+
+    .stat-card {
+        text-align: center;
+        padding: 2rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #4318FF;
+        margin-bottom: 0.5rem;
+    }
+
+    .cta-section {
+        background: #2B3674;
+        color: white;
+        padding: 80px 0;
+        position: relative;
+    }
+
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: url("{% static 'images/pattern.svg' %}") center/cover;
+        opacity: 0.05;
+    }
+
+    .btn-glow {
+        position: relative;
+    }
+
+    .btn-glow::after {
+        content: '';
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        bottom: -2px;
+        left: -2px;
+        background: inherit;
+        filter: blur(10px);
+        opacity: 0.5;
+        z-index: -1;
+        border-radius: inherit;
+        transition: opacity 0.3s ease;
+    }
+
+    .btn-glow:hover::after {
+        opacity: 0.7;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="content-card" style="text-align: center; max-width: 800px; margin: 0 auto;">
-    <div style="margin-bottom: 3rem;">
-        <h1 style="
-            font-size: 2.5rem;
-            color: var(--navy-blue);
-            margin-bottom: 1.5rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        ">Welcome to Student's Government Election</h1>
-        
-        <p style="
-            font-size: 1.1rem;
-            color: #718096;
-            line-height: 1.6;
-            margin-bottom: 2rem;
-        ">Exercise your right to vote and be part of shaping the future of our school's student leadership.</p>
-
-        {% if not user.is_authenticated %}
-        <div style="display: flex; gap: 1rem; justify-content: center;">
-            <a href="{% url 'login' %}" class="btn-primary">
-                <i class="fas fa-sign-in-alt"></i>
-                Login to Vote
-            </a>
-            <a href="{% url 'register' %}" style="
-                background: rgba(67, 24, 255, 0.05);
-                color: var(--primary-color);
-                border: none;
-                border-radius: 12px;
-                padding: 12px 24px;
-                font-size: 1rem;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                display: inline-flex;
-                align-items: center;
-                gap: 0.5rem;
-                text-decoration: none;
-            ">
-                <i class="fas fa-user-plus"></i>
-                Register Now
-            </a>
-        </div>
-        {% else %}
-        <div style="
-            background: rgba(67, 24, 255, 0.05);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-top: 2rem;
-        ">
-            <h2 style="
-                color: var(--navy-blue);
-                font-size: 1.5rem;
-                margin-bottom: 1rem;
-                font-weight: 600;
-            ">Quick Actions</h2>
-            
-            <div style="display: flex; gap: 1rem; justify-content: center;">
-                {% if user.is_admin %}
-                <a href="{% url 'admin:index' %}" class="btn-primary">
-                    <i class="fas fa-columns"></i>
-                    Go to Admin Dashboard
-                </a>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="hero-title">Student Government Elections Made Simple</h1>
+                <p class="hero-subtitle">Empowering students with secure, transparent, and efficient voting system at St Jude School.</p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'election:election-list' %}" class="btn btn-light btn-lg btn-glow">
+                        <i class="fas fa-vote-yea me-2"></i>View Elections
+                    </a>
                 {% else %}
-                <a href="{% url 'election:election-list' %}" class="btn-primary">
-                    <i class="fas fa-vote-yea"></i>
-                    View Active Elections
-                </a>
+                    <a href="{% url 'login' %}" class="btn btn-light btn-lg btn-glow">
+                        <i class="fas fa-sign-in-alt me-2"></i>Get Started
+                    </a>
                 {% endif %}
             </div>
+            <div class="col-lg-6">
+                <img src="{% static 'images/hero-illustration.svg' %}" alt="Voting Illustration" class="img-fluid">
+            </div>
         </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold text-primary">Why Choose Our System?</h2>
+            <p class="text-muted">Designed with security, simplicity, and transparency in mind</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Secure Voting</h3>
+                    <p class="text-muted">Advanced security measures ensure the integrity of every vote cast.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Real-time Results</h3>
+                    <p class="text-muted">Watch the election unfold with live vote counting and analytics.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Easy Access</h3>
+                    <p class="text-muted">Vote from any device with our responsive and user-friendly interface.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_elections }}</div>
+                    <div class="text-muted">Elections Conducted</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_voters }}</div>
+                    <div class="text-muted">Registered Voters</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_votes }}</div>
+                    <div class="text-muted">Votes Cast</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-4">Ready to Make Your Voice Heard?</h2>
+        <p class="lead mb-4">Join your fellow students in shaping the future of St Jude School.</p>
+        {% if user.is_authenticated %}
+            <a href="{% url 'election:election-list' %}" class="btn btn-primary btn-lg btn-glow">
+                <i class="fas fa-vote-yea me-2"></i>View Active Elections
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg btn-glow">
+                <i class="fas fa-user-plus me-2"></i>Register Now
+            </a>
         {% endif %}
     </div>
+</section>
+{% endblock %}
 
-    <!-- Features Section -->
-    <div style="
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 2rem;
-        margin-top: 3rem;
-        padding-top: 3rem;
-        border-top: 1px solid #E9ECEF;
-    ">
-        <div style="text-align: center;">
-            <i class="fas fa-shield-alt" style="
-                font-size: 2rem;
-                color: var(--primary-color);
-                margin-bottom: 1rem;
-            "></i>
-            <h3 style="color: var(--navy-blue); margin-bottom: 0.5rem;">Secure Voting</h3>
-            <p style="color: #718096; font-size: 0.95rem;">Your vote is secure and confidential with our advanced security measures.</p>
-        </div>
+{% block extra_js %}
+<script>
+    // Add animation for stats
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate');
+            }
+        });
+    });
 
-        <div style="text-align: center;">
-            <i class="fas fa-chart-bar" style="
-                font-size: 2rem;
-                color: var(--primary-color);
-                margin-bottom: 1rem;
-            "></i>
-            <h3 style="color: var(--navy-blue); margin-bottom: 0.5rem;">Real-time Results</h3>
-            <p style="color: #718096; font-size: 0.95rem;">Watch the election progress with live vote counting and results.</p>
-        </div>
-
-        <div style="text-align: center;">
-            <i class="fas fa-users" style="
-                font-size: 2rem;
-                color: var(--primary-color);
-                margin-bottom: 1rem;
-            "></i>
-            <h3 style="color: var(--navy-blue); margin-bottom: 0.5rem;">Fair Elections</h3>
-            <p style="color: #718096; font-size: 0.95rem;">Every student gets an equal opportunity to participate in the democratic process.</p>
-        </div>
-    </div>
-</div>
+    document.querySelectorAll('.stat-card').forEach(card => {
+        observer.observe(card);
+    });
+</script>
 {% endblock %} 

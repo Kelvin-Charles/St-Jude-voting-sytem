@@ -9,6 +9,7 @@ from django.db import transaction
 from django.http import HttpResponseForbidden
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login
+from django.db.models import Count
 
 from .models import Election, Position, Candidate, Vote, User
 from .forms import ElectionForm, PositionForm, CandidateForm, VoteForm, StudentRegistrationForm
@@ -83,35 +84,60 @@ def edit_election(request, pk):
         'election': election
     })
 
+def can_vote(user, election):
+    """Check if user can vote in this election"""
+    if not election.is_active:
+        return False
+        
+    # Get all positions in this election
+    positions = Position.objects.filter(election=election)
+    
+    # Get all positions the user has voted for in this election
+    voted_positions = Vote.objects.filter(
+        voter=user,
+        election=election
+    ).values_list('position_id', flat=True)
+    
+    # If user hasn't voted for all positions, they can still vote
+    return voted_positions.count() < positions.count()
+
 @login_required
-@prevent_double_voting
 def vote_view(request, election_id):
     election = get_object_or_404(Election, pk=election_id)
     
-    if not election.is_ongoing():
-        messages.error(request, "This election is not currently active.")
+    # Check if user can vote
+    if not can_vote(request.user, election):
+        messages.warning(request, "You have already voted in all positions for this election.")
         return redirect('election:election-list')
     
     if request.method == 'POST':
+        # Process the vote
         form = VoteForm(election, request.POST)
         if form.is_valid():
             try:
                 with transaction.atomic():
-                    for field_name, candidate in form.cleaned_data.items():
+                    for field_name, candidate_id in form.cleaned_data.items():
                         if field_name.startswith('position_'):
-                            Vote.objects.create(
+                            position_id = int(field_name.split('_')[1])
+                            position = Position.objects.get(id=position_id)
+                            
+                            # Check if user already voted for this position
+                            if not Vote.objects.filter(
                                 voter=request.user,
-                                candidate=candidate,
                                 election=election,
-                                position=candidate.position
-                            )
-                    if send_vote_confirmation(request, request.user, election):
-                        messages.success(request, "Your vote has been recorded successfully!")
-                    else:
-                        messages.warning(request, "Your vote was recorded but there was an error sending the confirmation email.")
-                    return redirect('election:election-list')
+                                position=position
+                            ).exists():
+                                Vote.objects.create(
+                                    voter=request.user,
+                                    candidate_id=candidate_id,
+                                    election=election,
+                                    position=position
+                                )
+                
+                messages.success(request, "Your vote has been recorded successfully!")
+                return redirect('election:election-list')
             except Exception as e:
-                messages.error(request, "An error occurred while recording your vote.")
+                messages.error(request, f"Error recording vote: {str(e)}")
     else:
         form = VoteForm(election)
     
@@ -236,4 +262,22 @@ def candidate_edit_view(request, candidate_id):
         'form': form,
         'candidate': candidate,
         'position': candidate.position
-    }) 
+    })
+
+def election_list(request):
+    elections = Election.objects.all().order_by('-created_at')
+    
+    context = {
+        'elections': elections,
+        'now': timezone.now(),
+        'user': request.user  # Make sure user is in context
+    }
+    return render(request, 'election/election_list.html', context)
+
+def home(request):
+    context = {
+        'total_elections': Election.objects.count(),
+        'total_voters': User.objects.filter(role='student').count(),
+        'total_votes': Vote.objects.count(),
+    }
+    return render(request, 'election/home.html', context) 
